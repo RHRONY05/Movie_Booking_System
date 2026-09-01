@@ -49,6 +49,9 @@ export const loggerMiddleware = pinoHttp({
       id: req.id,
       method: req.method,
       url: req.url,
+      // req.raw is the original Express request object. 
+      // We safely grab the userId from the body (if it exists) to track WHO is making the request.
+      userId: req.raw?.body?.userId, 
       // We intentionally leave out req.headers and req.remoteAddress to save space and increase security
     }),
     res: (res) => ({
