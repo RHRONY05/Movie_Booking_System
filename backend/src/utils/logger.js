@@ -36,6 +36,21 @@ const logger = pino(
   transport
 );
 
+// Middleware to capture the response body before it's sent out
+export const responseBodyCapture = (req, res, next) => {
+  const originalSend = res.send;
+  res.send = function (body) {
+    // Attempt to parse the body as JSON if possible so it logs cleanly
+    try {
+      res.locals.responseBody = JSON.parse(body);
+    } catch (e) {
+      res.locals.responseBody = body;
+    }
+    return originalSend.apply(this, arguments);
+  };
+  next();
+};
+
 // Middleware for logging HTTP requests
 export const loggerMiddleware = pinoHttp({
   logger,
@@ -49,14 +64,13 @@ export const loggerMiddleware = pinoHttp({
       id: req.id,
       method: req.method,
       url: req.url,
-      // req.raw is the original Express request object. 
-      // We safely grab the userId from the body (if it exists) to track WHO is making the request.
-      userId: req.raw?.body?.userId, 
-      // We intentionally leave out req.headers and req.remoteAddress to save space and increase security
+      // We grab userId from body, or if using authMiddleware, we could grab it from req.raw.user
+      userId: req.raw?.body?.userId || req.raw?.user?.userId, 
     }),
     res: (res) => ({
       statusCode: res.statusCode,
-      // Leaving out res.headers
+      // Log the captured response body (from our custom middleware)
+      body: res.raw?.locals?.responseBody,
     }),
   },
 });
