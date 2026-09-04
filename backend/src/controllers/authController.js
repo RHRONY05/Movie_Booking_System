@@ -21,8 +21,6 @@ export const googleSignIn = async (req, res) => {
     const payload = ticket.getPayload();
     
     // Logging for testing and learning purposes
-    req.log.info('--- Received Google Token ---');
-    req.log.info(token); // The raw encrypted token
     req.log.info('--- Decoded Google Payload ---');
     req.log.info(payload); // The decrypted user data
     
@@ -58,7 +56,11 @@ export const googleSignIn = async (req, res) => {
     });
 
   } catch (error) {
-    req.log?.error?.({ err: error }, 'Google Auth Error') || console.error('Google Auth Error:', error);
+    if (req.log) {
+      req.log.error({ err: error }, 'Google Auth Error');
+    } else {
+      console.error('Google Auth Error:', error);
+    }
     res.status(401).json({ error: 'Invalid or expired Google token' });
   }
 };
@@ -81,7 +83,11 @@ export const getMe = async (req, res) => {
 
     res.status(200).json({ user });
   } catch (error) {
-    req.log?.error?.({ err: error }, 'Get Me Error') || console.error('Get Me Error:', error);
+    if (req.log) {
+      req.log.error({ err: error }, 'Get Me Error');
+    } else {
+      console.error('Get Me Error:', error);
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };

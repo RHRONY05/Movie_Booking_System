@@ -1,40 +1,50 @@
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 
-// Create a multi-transport configuration
-const transport = pino.transport({
-  targets: [
-    // 1. Console output (formatted nicely for development)
-    ...(process.env.NODE_ENV !== 'production'
-      ? [
-          {
-            target: 'pino-pretty',
-            options: { colorize: true, translateTime: 'SYS:standard' },
-            level: 'info',
-          },
-        ]
-      : []),
-    // 2. File output (JSON logs rotated daily, kept to max 10MB per file)
-    {
-      target: 'pino-roll',
-      options: {
-        file: 'logs/app', // creates files like app.2023-10-25
-        size: '10m',
-        frequency: 'daily',
-        mkdir: true,
-      },
-      level: 'info',
-    },
-  ],
-});
+const isTest = process.env.NODE_ENV === 'test';
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Configure the base logger with the transports
-const logger = pino(
-  {
-    level: process.env.LOG_LEVEL || 'info',
-  },
-  transport
-);
+let logger;
+
+if (isTest) {
+  // In test environment, keep logger silent for clean, readable Jest console output
+  logger = pino({ level: 'silent' });
+} else {
+  // Multi-transport configuration for Dev & Production
+  const transport = pino.transport({
+    targets: [
+      // 1. Console output (formatted nicely for development)
+      ...(!isProduction
+        ? [
+            {
+              target: 'pino-pretty',
+              options: { colorize: true, translateTime: 'SYS:standard' },
+              level: 'info',
+            },
+          ]
+        : []),
+      // 2. File output (JSON logs rotated daily, kept to max 10MB per file)
+      {
+        target: 'pino-roll',
+        options: {
+          file: 'logs/app', // creates files like app.2023-10-25
+          size: '10m',
+          frequency: 'daily',
+          mkdir: true,
+        },
+        level: 'info',
+      },
+    ],
+  });
+
+  // Configure the base logger with the transports
+  logger = pino(
+    {
+      level: process.env.LOG_LEVEL || 'info',
+    },
+    transport
+  );
+}
 
 // Middleware to capture the response body before it's sent out
 export const responseBodyCapture = (req, res, next) => {
