@@ -13,16 +13,24 @@ if (isTest) {
   // Multi-transport configuration for Dev & Production
   const transport = pino.transport({
     targets: [
-      // 1. Console output (formatted nicely for development)
+      // 1. Console / stdout output:
+      // In Development: use pino-pretty for human-friendly colors
+      // In Production / Docker: output structured JSON to stdout so Docker captures it
       ...(!isProduction
         ? [
             {
               target: 'pino-pretty',
               options: { colorize: true, translateTime: 'SYS:standard' },
-              level: 'info',
+              level: process.env.LOG_LEVEL || 'info',
             },
           ]
-        : []),
+        : [
+            {
+              target: 'pino/file',
+              options: { destination: 1 }, // 1 = process.stdout
+              level: process.env.LOG_LEVEL || 'info',
+            },
+          ]),
       // 2. File output (JSON logs rotated daily, kept to max 10MB per file)
       {
         target: 'pino-roll',
@@ -32,15 +40,16 @@ if (isTest) {
           frequency: 'daily',
           mkdir: true,
         },
-        level: 'info',
+        level: process.env.LOG_LEVEL || 'info',
       },
     ],
   });
 
-  // Configure the base logger with the transports
+  // Configure the base logger with the transports and ISO readable timestamp
   logger = pino(
     {
       level: process.env.LOG_LEVEL || 'info',
+      timestamp: pino.stdTimeFunctions.isoTime,
     },
     transport
   );
