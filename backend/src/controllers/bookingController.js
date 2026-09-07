@@ -77,7 +77,10 @@ export const initiateBooking = async (req, res) => {
 
     res.status(200).json({
       message: 'Booking initiated successfully',
-      booking: bookingResult.rows[0]
+      booking: {
+        ...bookingResult.rows[0],
+        expires_at: expiresAt,
+      },
     });
   } catch (error) {
     // If absolutely anything goes wrong (network failure, bad query, etc), undo everything we did in this transaction.
@@ -103,15 +106,15 @@ export const verifyOtp = async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // 1. Verify the booking belongs to the user and is pending
+    // 1. Fetch the booking
     const bookingRes = await client.query(
-      'SELECT seat_id, status FROM bookings WHERE id = $1 AND user_id = $2 FOR UPDATE',
+      'SELECT id, seat_id, user_id, status FROM bookings WHERE id = $1 AND user_id = $2 FOR UPDATE',
       [bookingId, userId]
     );
 
     if (bookingRes.rows.length === 0) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ error: 'Booking not found or unauthorized' });
+      return res.status(404).json({ error: 'Booking not found' });
     }
 
     const booking = bookingRes.rows[0];
@@ -164,5 +167,42 @@ export const verifyOtp = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   } finally {
     client.release();
+  }
+};
+
+/**
+ * Retrieve booking history for the authenticated user
+ * GET /api/bookings/my-bookings
+ */
+export const getMyBookings = async (req, res) => {
+  const userId = req.user?.userId;
+
+  try {
+    const result = await pool.query(
+      `SELECT 
+        b.id,
+        b.status,
+        b.created_at,
+        o.expires_at,
+        s.seat_number,
+        m.id AS movie_id,
+        m.title AS movie_title,
+        m.poster_url,
+        m.showtime
+      FROM bookings b
+      JOIN seats s ON b.seat_id = s.id
+      JOIN movies m ON s.movie_id = m.id
+      LEFT JOIN otp_verifications o ON b.id = o.booking_id
+      WHERE b.user_id = $1
+      ORDER BY b.created_at DESC`,
+      [userId]
+    );
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    if (req.log) {
+      req.log.error({ err: error }, 'Get My Bookings Error');
+    }
+    res.status(500).json({ error: 'Failed to fetch user bookings' });
   }
 };

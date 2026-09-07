@@ -17,11 +17,25 @@ describe('POST /api/bookings/initiate Concurrency & Locking', () => {
       json: async () => ({ message: 'Mocked email sent successfully' }),
     });
 
-    // 2. Clean up previous test data
-    await pool.query('DELETE FROM otp_verifications');
-    await pool.query('DELETE FROM bookings');
-    await pool.query('DELETE FROM seats');
-    await pool.query('DELETE FROM movies');
+    // 2. Clean up any previous run of this specific test only
+    await pool.query(`
+      DELETE FROM otp_verifications WHERE booking_id IN (
+        SELECT b.id FROM bookings b 
+        JOIN users u ON b.user_id = u.id 
+        WHERE u.email = 'test.concurrency@example.com'
+      )
+    `);
+    await pool.query(`
+      DELETE FROM bookings WHERE user_id IN (
+        SELECT id FROM users WHERE email = 'test.concurrency@example.com'
+      )
+    `);
+    await pool.query(`
+      DELETE FROM seats WHERE movie_id IN (
+        SELECT id FROM movies WHERE title = 'Concurrency Test Movie'
+      )
+    `);
+    await pool.query('DELETE FROM movies WHERE title = $1', ['Concurrency Test Movie']);
     await pool.query('DELETE FROM users WHERE email = $1', ['test.concurrency@example.com']);
 
     // 3. Create a test user

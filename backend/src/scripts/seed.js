@@ -7,21 +7,31 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Realistic Movie Data
+// CineReserve Featured Movie Catalog
 const movies = [
   {
-    title: 'Dune: Part Two',
-    poster_url: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2JGqqUT1v.jpg',
-    showtime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    title: 'Neon Ascension',
+    poster_url: '/assets/posters/neon_ascension.jpg',
+    showtime: new Date(Date.now() + 86400000).toISOString(),
   },
   {
-    title: 'Oppenheimer',
-    poster_url: 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
-    showtime: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
-  }
+    title: 'The Elysium Gate',
+    poster_url: '/assets/posters/elysium_gate.jpg',
+    showtime: new Date(Date.now() + 172800000).toISOString(),
+  },
+  {
+    title: 'Midnight Protocol',
+    poster_url: '/assets/posters/midnight_protocol.jpg',
+    showtime: new Date(Date.now() + 259200000).toISOString(),
+  },
+  {
+    title: 'Stellar Echoes',
+    poster_url: '/assets/posters/stellar_echoes.jpg',
+    showtime: new Date(Date.now() + 345600000).toISOString(),
+  },
 ];
 
-// Theater Layout: Rows A to F, 10 seats per row (60 total)
+// Auditorium Layout: Rows A to F, 10 seats per row (60 total per movie)
 const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
 const seatsPerRow = 10;
 
@@ -43,9 +53,9 @@ async function seed() {
         [movie.title, movie.poster_url, movie.showtime]
       );
       const movieId = movieResult.rows[0].id;
-      console.log(`🎬 Inserted movie: ${movie.title}`);
+      console.log(`🎬 Inserted movie: ${movie.title} (ID: ${movieId})`);
 
-      // 3. Generate 60 seats for this movie
+      // 3. Generate 60 seats for this movie with PostgreSQL UUIDs
       let seatCount = 0;
       for (const row of rows) {
         for (let i = 1; i <= seatsPerRow; i++) {
@@ -61,7 +71,7 @@ async function seed() {
       console.log(`💺 Generated ${seatCount} seats for ${movie.title}.`);
     }
 
-    console.log('✅ Seeding completed successfully!');
+    console.log('✅ Seeding completed successfully! All movies & seats have valid PostgreSQL UUIDs.');
   } catch (error) {
     console.error('❌ Error during seeding:', error);
   } finally {

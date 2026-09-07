@@ -4,6 +4,7 @@ import { loggerMiddleware, responseBodyCapture } from './utils/logger.js';
 import healthRouter from './routes/health.js';
 import bookingRouter from './routes/bookings.js';
 import authRouter from './routes/authRoutes.js';
+import movieRouter from './routes/movieRoutes.js';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(loggerMiddleware); // 👈 Now the logger can read req.raw.body and res.
 
 // Routes
 app.use('/health', healthRouter);
+app.use('/api/movies', movieRouter);
 app.use('/api/bookings', bookingRouter);
 app.use('/api/auth', authRouter);
 
