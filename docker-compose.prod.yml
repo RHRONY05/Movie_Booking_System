@@ -1,0 +1,94 @@
+services:
+  # -------------------------------------------------------------------
+  # 1. PostgreSQL Database Service
+  # -------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: movie_booking_prod_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: ${POSTGRES_DB:-movie_booking}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-movie_booking}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+    networks:
+      - movie_network
+
+  # -------------------------------------------------------------------
+  # 2. Automated Migration Runner (One-Shot Task)
+  # -------------------------------------------------------------------
+  migration:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: movie_booking_prod_migration
+    restart: "no"
+    command: ["npx", "node-pg-migrate", "up"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-password123}@postgres:5432/${POSTGRES_DB:-movie_booking}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - movie_network
+
+  # -------------------------------------------------------------------
+  # 3. Express Backend API Service
+  # -------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: movie_booking_prod_backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      # Connect to PostgreSQL using the internal container service name 'postgres'
+      DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-password123}@postgres:5432/${POSTGRES_DB:-movie_booking}
+    volumes:
+      - ./backend/logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    networks:
+      - movie_network
+
+  # -------------------------------------------------------------------
+  # 4. React Frontend + Nginx Reverse Proxy Service
+  # -------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: movie_booking_prod_frontend
+    restart: always
+    ports:
+      # Only the frontend/Nginx is exposed to the public host
+      - "${FRONTEND_PORT:-8081}:80"
+    depends_on:
+      - backend
+    networks:
+      - movie_network
+
+# -------------------------------------------------------------------
+# Persistent Volumes & Private Network
+# -------------------------------------------------------------------
+volumes:
+  pgdata_prod:
+
+networks:
+  movie_network:
+    driver: bridge

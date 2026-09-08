@@ -145,3 +145,65 @@ NPM has a built-in, convention-based lifecycle engine. For **any** script define
 5. **Developers and CI servers never have to remember to run migrations on the test database manually.**
 
 ---
+
+## 6. Development vs. Production Database Isolation & Volumes
+
+A common point of confusion is assuming that because both your development and production configurations use the same database name (`movie_booking`):
+```text
+# Development (.env)
+DATABASE_URL=postgres://admin:password123@localhost:5432/movie_booking
+
+# Production (docker-compose.prod.yml)
+DATABASE_URL=postgres://admin:password123@postgres:5432/movie_booking
+```
+they must be sharing or overwriting the same physical database.
+
+### The "Two Houses Named John" Concept
+Imagine two different people who both happen to be named **"John"**, but one lives in **New York** and the other lives in **London**:
+* They share the exact same name ("John").
+* But they are two completely different people, living in two different houses, with two completely separate bank accounts.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│ DEVELOPMENT CONTAINER (backend/docker-compose.yml)                     │
+│ Container Name:   movie_booking_db                                     │
+│ Host Port:        5432                                                 │
+│ Storage Volume:   pgdata (House 1 on host drive)                       │
+│ Content:          Dev database "movie_booking" (4 seeded movies)       │
+│                   Test database "movie_booking_test"                   │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│ PRODUCTION CONTAINER  (docker-compose.prod.yml)                        │
+│ Container Name:   movie_booking_prod_db                                │
+│ Host Port:        5433                                                 │
+│ Storage Volume:   pgdata_prod (House 2 on host drive)                  │
+│ Content:          Prod database "movie_booking" (Clean/Independent)    │
+│                   (Contains real users, 0 movies until seeded)         │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Why Do We Keep the Same Database Name (`movie_booking`)?
+Why not name it `movie_booking_dev` and `movie_booking_prod`?
+1. **Clean, Environment-Agnostic Code:** You never want your backend code, migration files, or SQL scripts littered with conditional logic like: `IF env == 'prod' USE movie_booking_prod`.
+2. **Infrastructure Parity:** Your application code should be identical in every environment. The **infrastructure layer** (Docker volumes: `pgdata` vs `pgdata_prod`) provides total physical isolation without requiring code changes.
+
+### Why Creating `pgdata_prod` Never Destroys Development Data
+* A Docker volume is an independent directory managed by Docker on your host drive.
+* Starting `pgdata_prod` created a fresh, blank directory.
+* Your development volume (`pgdata`) was **never modified, overwritten, or deleted**. Both exist side-by-side like two separate USB flash drives.
+
+### Verifying Both Databases Side-by-Side in DBeaver
+By mapping port `5433:5432` on the production container, you can connect to both simultaneously:
+1. **Connect to `localhost:5432`:** Inspects your **Development** database (shows 4 sample movies from Phase 3).
+2. **Connect to `localhost:5433`:** Inspects your **Production** database (shows newly authenticated Google OAuth users, but 0 movies until seeded).
+
+### The HTTP 304 (Not Modified) Caching Gotcha
+When first testing the production container in Chrome, you might see movies appear on screen even if the production database has not been seeded yet.
+* Look at the backend log:
+  ```json
+  {"req":{"method":"GET","url":"/api/movies"},"res":{"statusCode":304,"body":[]}}
+  ```
+* **HTTP 304 means "Not Modified":** The browser had cached the movies response in memory from earlier development.
+* Express returned HTTP 304 with an empty body (`body: []`). The browser displayed its cached memory copy until DevTools was opened with **"Disable cache"** enabled.
+

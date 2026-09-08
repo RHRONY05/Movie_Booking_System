@@ -1,17 +1,17 @@
-# 01 — Docker Core Concepts, Storage & CLI Cheat Sheet
+# 01 — Docker Core Concepts & CLI Cheat Sheet
 
-> **Module 1 of 3 in Docker Series**  
-> **Topic:** Container Anatomy, Host Hardware Sharing, Port Mapping, Storage Types & Essential Commands.
+> **Module 1 in Docker Series**  
+> **Topic:** Container Anatomy, Host Hardware Sharing, Namespaces & Cgroups, Images vs. Containers, Port Mapping (`-p Host:Container`), Container Ephemerality, and Essential CLI Commands.
 
 ---
 
 ## 1. What is a Container? (The Mental Model)
 
 A Docker container is **NOT a Virtual Machine (VM)**:
-- A **Virtual Machine** simulates fake hardware (virtual CPU, RAM, BIOS) and runs a heavy guest OS (takes gigabytes of RAM).
-- A **Docker Container** is an ordinary, lightweight Linux process running **directly on your host machine's physical hardware**.
+* A **Virtual Machine** simulates fake hardware (virtual CPU, RAM, BIOS) and runs a heavy guest OS (takes gigabytes of RAM).
+* A **Docker Container** is an ordinary, lightweight Linux process running **directly on your host machine's physical hardware**.
 
-```
+```text
                       YOUR PHYSICAL COMPUTER HARDWARE
    ┌───────────────────────────────────────────────────────────────────┐
    │ Physical CPU  │  Physical RAM  │  Physical SSD  │  Physical Network│
@@ -32,25 +32,25 @@ A Docker container is **NOT a Virtual Machine (VM)**:
 ```
 
 ### The Two Isolation Mechanisms:
-1. **Namespaces:** Creates a virtual wall so the container only sees its own processes (PID), its own filesystem mount points, and its own virtual network card.
-2. **Cgroups (Control Groups):** Limits how much CPU/RAM the container is allowed to consume.
+1. **Namespaces:** Creates a virtual wall so the container only sees its own processes (PID), its own network interface, and its own filesystem mounts.
+2. **Cgroups (Control Groups):** Limits how much physical CPU/RAM the container is allowed to consume.
 
 ---
 
 ## 2. Image vs. Container
 
-| Concept | What It Is | Analogy |
+| Concept | What It Is | Real-World Analogy |
 |---|---|---|
-| **Docker Image** | A frozen, read-only package containing OS files, Node runtime, and application code. | The architectural blueprint / baked cake recipe |
-| **Docker Container** | A live, running process instance of an image in memory. | The actual house built from the blueprint / the cake being eaten |
+| **Docker Image** | A frozen, read-only package containing OS files, Node runtime, and application code. | The architectural blueprint |
+| **Docker Container** | A live, running process instance of an image in memory. | The actual physical building constructed from the blueprint |
 
 ---
 
-## 3. Port Mapping & Network Bridging (`-p Host:Container`)
+## 3. Port Mapping (`-p Host:Container`)
 
 Containers are sandboxed. By default, ports opened inside a container cannot be reached from your Windows browser.
 
-```
+```text
  WINDOWS HOST (Browser)                           CONTAINER
  ┌───────────────────┐     Port Forwarding       ┌───────────────────┐
  │ localhost:5000    ├──────────────────────────►│ Port 5000         │
@@ -58,36 +58,20 @@ Containers are sandboxed. By default, ports opened inside a container cannot be 
                                                  └───────────────────┘
 ```
 
-- **Syntax:** `-p <Host Port>:<Container Port>` (e.g. `5000:5000` or `3000:5173`)
-- **Host Port (Left):** The port you visit on Windows (`http://localhost:5000`).
-- **Container Port (Right):** The internal port where Express or PostgreSQL is listening.
-- **`EXPOSE 5000` (in Dockerfile):** Purely documentation/metadata. It tells developers which port is used, but **does not** open ports on Windows by itself.
-- **Host Binding (`0.0.0.0`):** Inside a container, your server MUST listen on `0.0.0.0` (all network interfaces) so Docker's bridge can route traffic to it.
+* **Syntax:** `-p <Host Port>:<Container Port>` (e.g. `5000:5000` or `8081:80`).
+* **Host Port (Left):** The door you visit on Windows (`http://localhost:5000`).
+* **Container Port (Right):** The internal port where Express, Nginx, or PostgreSQL is listening.
+* **`EXPOSE 5000` (in Dockerfile):** Pure documentation metadata for developers. It does **not** open ports on Windows by itself.
+* **Host Binding (`0.0.0.0`):** Inside a container, servers must listen on `0.0.0.0` (all network interfaces) so Docker's bridge can route traffic to it.
 
 ---
 
-## 4. Container Storage: Named Volumes vs. Bind Mounts
+## 4. Container Ephemerality (Why Containers Don't Persist Data)
 
-Containers are **ephemeral** (temporary). If a container is deleted, all files written strictly inside it are permanently destroyed.
-
-Docker provides two ways to persist data:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ 1. NAMED VOLUMES (For Databases)                                            │
-│    - Managed entirely by Docker inside its internal storage engine.         │
-│    - Syntax: `volumes: - pgdata:/var/lib/postgresql/data`                   │
-│    - Requires top-level `volumes: pgdata:` declaration.                     │
-│    - High performance for database reads/writes on SSD.                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 2. BIND MOUNTS (For Code & Logs)                                            │
-│    - A direct link to a folder that ALREADY exists on your Windows machine. │
-│    - Syntax: `volumes: - ./logs:/app/logs`                                  │
-│    - Does NOT require top-level `volumes:` declaration.                     │
-│    - When container writes to `/app/logs`, it immediately appears in your   │
-│      physical `backend/logs` folder on Windows!                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+Containers are **immutable and disposable**:
+* When a container writes or updates a file (like PostgreSQL inserting rows or an app generating logs), those changes are written to a thin, temporary read/write layer.
+* **If the container is removed (`docker rm`), that temporary layer is permanently deleted.**
+* In modern container architecture, persistent data (like databases) is never stored strictly inside the container filesystem; it is mounted externally via Volumes (covered in detail in `04_docker_compose.md`).
 
 ---
 
@@ -124,6 +108,9 @@ docker exec -it <container_name> sh
 
 # Inspect container details (IP address, mounts, environment variables)
 docker inspect <container_name>
+
+# Check which user is executing commands inside the container
+docker run --rm <image_name> whoami
 ```
 
 ### Managing Images

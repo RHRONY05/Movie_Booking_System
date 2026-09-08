@@ -1,21 +1,42 @@
-# 1. Base Image: Use lightweight Node 20 on Alpine Linux
-FROM node:20-alpine
+# -------------------------------------------------------------------
+# STAGE 1: Install Production Dependencies (The Builder)
+# -------------------------------------------------------------------
+FROM node:20-alpine AS deps
 
-# 2. Set the working directory inside the container
 WORKDIR /app
 
-# 3. Copy package manifests first (leverages Docker layer caching)
+# Copy package manifests
 COPY package*.json ./
 
-# 4. Install production dependencies only
+# Install ONLY production dependencies cleanly
 RUN npm ci --omit=dev
 
-# 5. Copy the application source code and migrations
+# -------------------------------------------------------------------
+# STAGE 2: Minimal Production Runner (Hardened & Non-Root)
+# -------------------------------------------------------------------
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Set production environment
+ENV NODE_ENV=production
+
+# Copy production node_modules from the deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy package manifest, application code, and migrations
+COPY package*.json ./
 COPY src ./src
 COPY migrations ./migrations
 
-# 6. Expose the port our Express server listens on
+# Security Hardening: Ensure the non-root 'node' user owns the app directory
+RUN chown -R node:node /app
+
+# Switch from 'root' to the unprivileged 'node' user
+USER node
+
+# Document the listening port
 EXPOSE 5000
 
-# 7. Define the startup command to launch the server
+# Start the Express server
 CMD ["node", "src/server.js"]

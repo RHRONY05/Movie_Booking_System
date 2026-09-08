@@ -40,3 +40,28 @@
   - Phase 5 is officially complete! Ready to start Phase 6 (React + Vite Frontend).
 - **Open Questions:**
   - When we start the frontend, we will build a visual seat map. Do you have any preferences on UI styling (e.g. sleek dark cinema mode with glowing seat statuses)?
+
+## September 8-9, 2026 Session Log
+- **What was built:**
+  - **Phase 7 Step 1 (Multi-Environment DB Isolation):** Created dedicated `movie_booking_test` database inside PostgreSQL Docker container. Updated `src/config/db.js` for dynamic `NODE_ENV` connection switching. Configured npm lifecycle hook `"pretest": "npm run migrate:test"` to automatically synchronize test database schema before Jest runs. Audited and completed teardown cleanup across all 6 test suites.
+  - **Phase 7 Step 2 (Frontend Multi-Stage Dockerfile):** Created `frontend/Dockerfile` using two-stage architecture (Stage 1: `node:20-alpine` builder running `npm run build` -> `dist/`; Stage 2: `nginx:alpine` production runner). Created `frontend/nginx.conf` with SPA `try_files` routing fallback and static asset caching. Created `frontend/.dockerignore`. Built and verified `movie_booking_frontend:latest`.
+  - **Phase 7 Step 3 (Backend Multi-Stage Hardened Dockerfile):** Refactored `backend/Dockerfile` into production multi-stage build. Stage 1 installs clean production dependencies (`npm ci --omit=dev`). Stage 2 sets `USER node` (unprivileged, non-root user) with `chown -R node:node /app` for least-privilege security hardening. Verified via `whoami`.
+  - **Phase 7 Step 4 (Nginx Reverse Proxy & Full-Stack Orchestration):** Updated `frontend/nginx.conf` with `/api/` reverse proxy (`proxy_pass http://backend:5000` with real client IP headers). Created root `docker-compose.prod.yml` orchestrating `postgres` (with healthcheck and persistent volume `pgdata_prod`), `migration` (one-shot runner executing before backend), `backend`, and `frontend` on private `movie_network`. Exposed prod DB to port `5433` for DBeaver inspection. Tested full-stack flow live with Google OAuth authentication and seeded movie catalog.
+  - **Documentation & Educational Notes:** Created comprehensive educational guide `Notes/multi_environment_db_isolation.md`.
+- **What was taught/learned:**
+  - **Database Instance vs Logical Database:** How a single PostgreSQL server container hosts multiple isolated databases (`movie_booking`, `movie_booking_test`).
+  - **NPM Lifecycle Prefix Conventions:** How `pre<script>` and `post<script>` execute automatically (the pre-flight checklist pattern).
+  - **Browser to Nginx Real-World Lifecycle:** Why React runs in the browser, why JSX compiles down to 3 static files (`index.html`, `.js`, `.css`), and why browsers cache hashed assets for 1 year (`Cache-Control`).
+  - **Single Page Application (SPA) Routing Problem:** Why refreshing on `/my-bookings` returns 404 without Nginx's `try_files $uri $uri/ /index.html;`.
+  - **Multi-Stage Docker Builds (Scaffolding vs Finished Building):** Why Node.js should never run in production for React apps, and how copying only `/dist` into Nginx reduces image size from ~1GB to ~25MB.
+  - **Container Security & Least Privilege:** The danger of running containers as `root`, and how `USER node` restricts attack surfaces.
+  - **Forward Proxy vs. Reverse Proxy:** How Nginx acts as a reverse proxy to eliminate CORS, hide internal services, and forward client IP headers.
+  - **Docker Compose Pillars & Gotchas:** Service discovery via internal DNS (using service name `backend` instead of `localhost`), host vs container port mapping (`Host:Container`), ephemeral containers vs named persistent volumes (`pgdata` vs `pgdata_prod`), and how `healthcheck` (`pg_isready`) prevents startup race conditions.
+  - **Migrations vs Seeds:** Why migrations are safe to automate on startup via one-shot tasks, but destructive seed scripts (`DELETE FROM ...`) must never run blindly on production restarts.
+  - **Browser DevTools & Network Tab:** How to filter by `Fetch/XHR`, disable cache, inspect headers and JSON responses, and understand HTTP 304 (Not Modified).
+- **Status/Pending:**
+  - Phase 7 Steps 1 through 4 are **100% complete and verified live**!
+  - Next task: **Phase 7 Step 5 — Configure GitHub Actions CI Pipeline (`.github/workflows/ci.yml`)**.
+- **Open Questions:**
+  - When we build the GitHub Actions CI pipeline in the next session, we will run automated tests on GitHub's cloud runners with an ephemeral PostgreSQL service container. Have you ever worked with GitHub Actions or YAML workflows before?
+
