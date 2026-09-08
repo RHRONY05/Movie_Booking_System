@@ -4,8 +4,10 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "migrate": "node-pg-migrate",
+    "migrate:test": "cross-env DATABASE_URL=postgres://admin:password123@localhost:5432/movie_booking_test node-pg-migrate up",
+    "pretest": "npm run migrate:test",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "dev": "nodemon src/server.js"
   },
   "keywords": [],

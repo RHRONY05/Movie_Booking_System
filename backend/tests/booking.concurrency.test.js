@@ -117,4 +117,20 @@ describe('POST /api/bookings/initiate Concurrency & Locking', () => {
     const bookingsInDb = await pool.query('SELECT * FROM bookings WHERE seat_id = $1', [testSeatId]);
     expect(bookingsInDb.rows.length).toBe(1);
   });
+
+  afterAll(async () => {
+    // Clean up created entities for this concurrency test
+    if (testSeatId) {
+      await pool.query('DELETE FROM otp_verifications WHERE booking_id IN (SELECT id FROM bookings WHERE seat_id = $1)', [testSeatId]);
+      await pool.query('DELETE FROM bookings WHERE seat_id = $1', [testSeatId]);
+      await pool.query('DELETE FROM seats WHERE id = $1', [testSeatId]);
+    }
+    if (testMovieId) {
+      await pool.query('DELETE FROM movies WHERE id = $1', [testMovieId]);
+    }
+    if (testUserId) {
+      await pool.query('DELETE FROM users WHERE id = $1', [testUserId]);
+    }
+    await pool.end();
+  });
 });
