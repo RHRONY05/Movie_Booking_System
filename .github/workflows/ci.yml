@@ -1,0 +1,90 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Backend Integration Tests with Ephemeral PostgreSQL
+  # -------------------------------------------------------------
+  backend-test:
+    name: Backend Tests & DB Migrations
+    runs-on: ubuntu-latest
+
+    # Ephemeral PostgreSQL database container running alongside runner
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: movie_booking_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies (clean install)
+        working-directory: backend
+        run: npm ci
+
+      - name: Run database migrations and Jest integration tests
+        working-directory: backend
+        env:
+          NODE_ENV: test
+          TEST_DATABASE_URL: postgres://admin:password123@localhost:5432/movie_booking_test
+          DATABASE_URL: postgres://admin:password123@localhost:5432/movie_booking_test
+          PORT: 5000
+          JWT_SECRET: ci_test_secret_key_1234567890
+          GOOGLE_CLIENT_ID: dummy_google_client_id_for_ci
+          GOOGLE_CLIENT_SECRET: dummy_google_client_secret_for_ci
+          BREVO_API_KEY: dummy_brevo_api_key_for_ci
+          EMAIL_SENDER: test@moviebooking.com
+        run: npm test
+
+  # -------------------------------------------------------------
+  # Job 2: Frontend Lint & Production Bundle Build Check
+  # -------------------------------------------------------------
+  frontend-build:
+    name: Frontend Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies (clean install)
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run Oxlint linter
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Verify production Vite build compiles cleanly
+        working-directory: frontend
+        run: npm run build
