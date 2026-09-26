@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-DOMAIN="${1:-rhrony05.me}"
+DOMAIN="${1:-movies.rhrony05.me}"
 EMAIL="${2:-muhammadrony147@gmail.com}"
 
 GREEN='\033[0;32m'
@@ -21,11 +21,11 @@ git pull origin main
 
 echo -e "${BLUE}==> [2/4] Checking SSL/TLS Certificates for ${DOMAIN}...${NC}"
 if [ ! -d "/etc/letsencrypt/live/${DOMAIN}" ]; then
-    echo -e "${YELLOW}SSL certificate not found. Temporarily stopping frontend to free port 80...${NC}"
+    echo -e "${YELLOW}SSL certificate not found for ${DOMAIN}. Temporarily stopping frontend to free port 80...${NC}"
     docker compose -f docker-compose.prod.yml stop frontend || true
-    echo -e "${YELLOW}Requesting fresh certificate from Let's Encrypt...${NC}"
+    echo -e "${YELLOW}Requesting fresh certificate from Let's Encrypt for ${DOMAIN}...${NC}"
     sudo certbot certonly --standalone \
-        -d "${DOMAIN}" -d "www.${DOMAIN}" \
+        -d "${DOMAIN}" \
         --non-interactive --agree-tos -m "${EMAIL}"
     sudo mkdir -p /var/www/certbot
     echo -e "${GREEN}SSL Certificate successfully generated and active!${NC}"

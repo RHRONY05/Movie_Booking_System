@@ -109,7 +109,5 @@ jobs:
           script_stop: true
           script: |
             cd ~/Movie_booking_system
-            git pull origin main
-            docker compose -f docker-compose.prod.yml up -d --build
-            docker image prune -f
+            bash scripts/deploy.sh
 

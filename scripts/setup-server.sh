@@ -50,8 +50,8 @@ log_info "Target non-root user identified as: ${TARGET_USER}"
 log_info "Updating package lists and upgrading system packages..."
 apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-apt-get install -y ca-certificates curl gnupg lsb-release git htop ufw
-log_success "Base system packages updated successfully."
+apt-get install -y ca-certificates curl gnupg lsb-release git htop ufw certbot
+log_success "Base system packages and Certbot updated successfully."
 
 # ------------------------------------------------------------------------------
 # Step 2: Configure 2GB Swap Space
@@ -137,6 +137,7 @@ log_success "SERVER PROVISIONING COMPLETE!"
 echo "=============================================================================="
 echo "• Docker Version: $(docker --version)"
 echo "• Docker Compose Version: $(docker compose version)"
+echo "• Certbot Version: $(certbot --version)"
 echo ""
 echo "• Memory & Swap Status:"
 free -h
