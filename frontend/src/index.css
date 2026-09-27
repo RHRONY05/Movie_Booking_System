@@ -3,24 +3,35 @@
    ========================================================================== */
 
 :root {
-  /* Surface & Canvas Colors */
-  --bg-canvas: #090d16;
-  --bg-canvas-subtle: #0d121f;
-  --bg-surface: #111726;
-  --bg-surface-elevated: #1a2236;
-  --bg-surface-glass: rgba(17, 23, 38, 0.75);
-  --bg-surface-glass-hover: rgba(26, 34, 54, 0.85);
-  --bg-modal-backdrop: rgba(5, 8, 15, 0.82);
-  --bg-state-error: rgba(239, 68, 68, 0.12);
+  /* Surface & Canvas Colors (60% Dominant Base - Velveteen Violet / Imperial Plum) */
+  --bg-canvas: #11091f;
+  --bg-canvas-subtle: #170c29;
+  --bg-surface: #1d1033;
+  --bg-surface-elevated: #2a184a;
+  --bg-card: #2a184a;
+  --bg-card-hover: #382062;
+  --bg-surface-glass: rgba(29, 16, 51, 0.75);
+  --bg-surface-glass-hover: rgba(42, 24, 74, 0.85);
+  --bg-modal-backdrop: rgba(10, 5, 20, 0.85);
+  --bg-state-error: rgba(239, 68, 68, 0.15);
 
-  /* Brand & Accent Colors */
-  --accent-primary: #ff0a2f;
-  --accent-primary-hover: #ff2a4b;
-  --accent-glow: rgba(255, 10, 47, 0.4);
-  --accent-secondary: #00f0ff;
-  --accent-secondary-glow: rgba(0, 240, 255, 0.35);
-  --accent-gold: #ffb703;
-  --accent-purple: #bc13fe;
+  /* Brand & Accent Colors (10% High-Impact Accents - Neon Amethyst & Electric Teal) */
+  --accent-primary: #c084fc;
+  --accent-primary-hover: #d8b4fe;
+  --accent-glow: rgba(192, 132, 252, 0.45);
+  --accent-secondary: #06b6d4;
+  --accent-secondary-glow: rgba(6, 182, 212, 0.4);
+  --accent-gold: #f59e0b;
+  --accent-purple: #c084fc;
+
+  /* Button Tokens */
+  --btn-primary: #c084fc;
+  --btn-hover: #d8b4fe;
+  --btn-text: #11091f;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(192, 132, 252, 0.22);
+  --border-focus: #c084fc;
 
   /* Google Brand Colors */
   --google-blue: #4285f4;
@@ -31,20 +42,27 @@
   /* State & Feedback Colors */
   --state-available: #22c55e;
   --state-available-glow: rgba(34, 197, 94, 0.35);
-  --state-reserved: #f59e0b;
-  --state-reserved-glow: rgba(245, 158, 11, 0.35);
-  --state-booked: #334155;
+  --state-reserved: #06b6d4;
+  --state-reserved-glow: rgba(6, 182, 212, 0.35);
+  --state-booked: #130c21;
   --state-error: #ef4444;
 
-  /* Text & Foreground */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #090d16;
+  /* Cinema Seats (Domain Tokens) */
+  --seat-available: #2c184d;
+  --seat-selected: #c084fc;
+  --seat-reserved: #16434d;
+  --seat-booked: #130c21;
+  --screen-arc: rgba(192, 132, 252, 0.85);
 
-  /* Typography Scale */
-  --font-family-display: 'Outfit', -apple-system, sans-serif;
-  --font-family-body: 'Inter', -apple-system, sans-serif;
+  /* Text & Foreground */
+  --text-primary: #f8f4ff;
+  --text-secondary: #b7a6cc;
+  --text-muted: #85729c;
+  --text-inverse: #11091f;
+
+  /* Typography Scale (Editorial Roman: Cinzel + Plus Jakarta Sans) */
+  --font-family-display: 'Cinzel', serif;
+  --font-family-body: 'Plus Jakarta Sans', sans-serif;
 
   --font-size-xs: 0.75rem;   /* 12px */
   --font-size-sm: 0.875rem;  /* 14px */
@@ -80,13 +98,13 @@
   --radius-full: 9999px;
 
   --glass-blur: blur(16px);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-  --glass-border-hover: 1px solid rgba(255, 255, 255, 0.18);
+  --glass-border: 1px solid rgba(192, 132, 252, 0.12);
+  --glass-border-hover: 1px solid rgba(192, 132, 252, 0.28);
 
   --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
   --shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.7);
-  --shadow-glow-red: 0 0 25px var(--accent-glow);
-  --shadow-glow-cyan: 0 0 25px var(--accent-secondary-glow);
+  --shadow-glow-amethyst: 0 0 25px var(--accent-glow);
+  --shadow-glow-teal: 0 0 25px var(--accent-secondary-glow);
   --shadow-glow-green: 0 0 20px var(--state-available-glow);
 
   /* Layout Containers */

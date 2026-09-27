@@ -93,11 +93,11 @@ export const CheckoutDrawer = ({ movie, selectedSeat, onProceed, loading }) => {
             gap: 'var(--space-xs)',
             padding: 'var(--space-md) var(--space-xl)',
             backgroundColor: selectedSeat ? 'var(--accent-primary)' : 'var(--bg-surface-elevated)',
-            color: selectedSeat ? 'var(--text-primary)' : 'var(--text-muted)',
+            color: selectedSeat ? 'var(--btn-text)' : 'var(--text-muted)',
             borderRadius: 'var(--radius-md)',
             fontSize: 'var(--font-size-sm)',
             fontWeight: 'var(--font-weight-bold)',
-            boxShadow: selectedSeat ? 'var(--shadow-glow-red)' : 'none',
+            boxShadow: selectedSeat ? 'var(--shadow-glow-amethyst)' : 'none',
             cursor: selectedSeat && !loading ? 'pointer' : 'not-allowed',
             transition: 'var(--transition-fast)',
           }}

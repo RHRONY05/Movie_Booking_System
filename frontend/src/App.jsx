@@ -7,6 +7,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { LandingPage } from './pages/LandingPage';
 import { SeatSelectionPage } from './pages/SeatSelectionPage';
 import { MyBookingsPage } from './pages/MyBookingsPage';
+import { ThemeShowcasePage } from './pages/ThemeShowcasePage';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '125328161222-7qskkth90u7f557ck18hhe6s3moko0du.apps.googleusercontent.com';
 
@@ -14,8 +15,12 @@ const MainContent = () => {
   const [currentTab, setCurrentTab] = useState('movies');
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  const handleSelectMovie = (movie) => {
-    setSelectedMovie(movie);
+  const handleSelectMovie = (movie, time, day) => {
+    setSelectedMovie({
+      ...movie,
+      selectedTime: time || (movie?.showtimes ? movie.showtimes[0] : '7:00 PM'),
+      selectedDay: day || 'Today'
+    });
   };
 
   const handleNavigateHome = () => {
@@ -49,6 +54,8 @@ const MainContent = () => {
             movie={selectedMovie}
             onBack={handleNavigateHome}
           />
+        ) : currentTab === 'theme-showcase' ? (
+          <ThemeShowcasePage />
         ) : currentTab === 'profile' ? (
           <MyBookingsPage onBrowseMovies={handleNavigateHome} />
         ) : (

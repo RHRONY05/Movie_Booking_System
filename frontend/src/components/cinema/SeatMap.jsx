@@ -131,7 +131,7 @@ export const SeatMap = ({ seats = [], selectedSeat, onSeatClick }) => {
               height: '18px',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--accent-primary)',
-              boxShadow: 'var(--shadow-glow-red)',
+              boxShadow: 'var(--shadow-glow-amethyst)',
             }}
           />
           <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-primary)', fontWeight: 'var(--font-weight-bold)' }}>
@@ -186,8 +186,8 @@ function renderSeatButton(seat, isSelected, onSeatClick) {
   if (isSelected) {
     bg = 'var(--accent-primary)';
     border = '1px solid var(--accent-primary)';
-    color = 'var(--text-primary)';
-    shadow = 'var(--shadow-glow-red)';
+    color = 'var(--btn-text)';
+    shadow = 'var(--shadow-glow-amethyst)';
   } else if (isReserved) {
     bg = 'var(--state-reserved)';
     border = '1px solid var(--state-reserved)';

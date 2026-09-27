@@ -7,27 +7,47 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// CineReserve Featured Movie Catalog
+// CineReserve Featured Real Cinema Catalog
 const movies = [
   {
-    title: 'Neon Ascension',
-    poster_url: '/assets/posters/neon_ascension.jpg',
+    title: 'Blade Runner 2049',
+    poster_url: '/assets/posters/blade_runner_2049.webp',
     showtime: new Date(Date.now() + 86400000).toISOString(),
   },
   {
-    title: 'The Elysium Gate',
-    poster_url: '/assets/posters/elysium_gate.jpg',
+    title: 'Dune: Part Two',
+    poster_url: '/assets/posters/dune_part_two.webp',
     showtime: new Date(Date.now() + 172800000).toISOString(),
   },
   {
-    title: 'Midnight Protocol',
-    poster_url: '/assets/posters/midnight_protocol.jpg',
+    title: 'The Batman',
+    poster_url: '/assets/posters/the_batman.webp',
     showtime: new Date(Date.now() + 259200000).toISOString(),
   },
   {
-    title: 'Stellar Echoes',
-    poster_url: '/assets/posters/stellar_echoes.jpg',
+    title: 'Interstellar',
+    poster_url: '/assets/posters/interstellar.webp',
     showtime: new Date(Date.now() + 345600000).toISOString(),
+  },
+  {
+    title: 'Oppenheimer',
+    poster_url: '/assets/posters/oppenheimer.webp',
+    showtime: new Date(Date.now() + 432000000).toISOString(),
+  },
+  {
+    title: 'Drive',
+    poster_url: '/assets/posters/drive.webp',
+    showtime: new Date(Date.now() + 518400000).toISOString(),
+  },
+  {
+    title: 'Inception',
+    poster_url: '/assets/posters/inception.webp',
+    showtime: new Date(Date.now() + 604800000).toISOString(),
+  },
+  {
+    title: 'Cyberpunk: Edgerunners',
+    poster_url: '/assets/posters/cyberpunk_edgerunners.webp',
+    showtime: new Date(Date.now() + 691200000).toISOString(),
   },
 ];
 
@@ -38,7 +58,7 @@ const seatsPerRow = 10;
 async function seed() {
   console.log('🌱 Starting realistic database seed...');
   try {
-    // 1. Clear existing data (Order matters due to foreign keys!)
+    // 1. Clear existing data in foreign key dependency order
     await pool.query('DELETE FROM otp_verifications');
     await pool.query('DELETE FROM bookings');
     await pool.query('DELETE FROM seats');
@@ -71,7 +91,7 @@ async function seed() {
       console.log(`💺 Generated ${seatCount} seats for ${movie.title}.`);
     }
 
-    console.log('✅ Seeding completed successfully! All movies & seats have valid PostgreSQL UUIDs.');
+    console.log('✅ Seeding completed successfully! All 8 movies & 480 seats ready.');
   } catch (error) {
     console.error('❌ Error during seeding:', error);
   } finally {

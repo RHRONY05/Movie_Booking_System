@@ -48,7 +48,7 @@ export const AuthModal = () => {
             alignItems: 'center',
             justifyContent: 'center',
             color: 'var(--accent-primary)',
-            boxShadow: 'var(--shadow-glow-red)',
+            boxShadow: 'var(--shadow-glow-amethyst)',
           }}
         >
           <Film size={28} />

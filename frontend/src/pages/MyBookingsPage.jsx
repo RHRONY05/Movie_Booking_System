@@ -116,10 +116,10 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
         gap: 'var(--space-2xl)',
       }}
     >
-      {/* 1. User Profile Card (Stitch Specification) */}
+      {/* 1. User Profile Card */}
       <section
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          backgroundColor: 'var(--bg-card)',
           backdropFilter: 'var(--glass-blur)',
           WebkitBackdropFilter: 'var(--glass-blur)',
           border: 'var(--glass-border)',
@@ -132,14 +132,14 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
           gap: 'var(--space-2xl)',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: 'var(--shadow-card)',
+          boxShadow: 'var(--shadow-elevated)',
         }}
       >
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%)',
+            background: 'linear-gradient(180deg, rgba(192, 132, 252, 0.08) 0%, transparent 100%)',
             pointerEvents: 'none',
           }}
         />
@@ -152,14 +152,14 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               height: '96px',
               borderRadius: 'var(--radius-full)',
               backgroundColor: 'var(--accent-primary)',
-              border: '2px solid rgba(255, 255, 255, 0.15)',
+              border: '2px solid var(--border-subtle)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--text-primary)',
+              color: 'var(--btn-text)',
               fontSize: 'var(--font-size-3xl)',
               fontWeight: 'var(--font-weight-black)',
-              boxShadow: 'var(--shadow-glow-red)',
+              boxShadow: 'var(--shadow-glow-amethyst)',
             }}
           >
             {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
@@ -170,15 +170,15 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               position: 'absolute',
               bottom: '-4px',
               right: '-4px',
-              backgroundColor: 'var(--accent-primary)',
-              color: 'var(--text-primary)',
+              backgroundColor: 'var(--accent-secondary)',
+              color: 'var(--btn-text)',
               fontSize: '11px',
               fontWeight: 'var(--font-weight-black)',
               letterSpacing: '0.05em',
               padding: '2px 10px',
               borderRadius: 'var(--radius-full)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: 'var(--shadow-glow-red)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-glow-teal)',
             }}
           >
             PRO
@@ -213,7 +213,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 'var(--space-xs)',
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: 'var(--bg-surface-elevated)',
               border: 'var(--glass-border)',
               padding: 'var(--space-2xs) var(--space-md)',
               borderRadius: 'var(--radius-md)',
@@ -226,7 +226,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                 height: '8px',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--state-available)',
-                boxShadow: '0 0 10px rgba(34, 197, 94, 0.6)',
+                boxShadow: 'var(--shadow-glow-green)',
               }}
             />
             <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-primary)' }}>
@@ -240,7 +240,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
           <button
             onClick={() => toast.info('Profile settings are managed via your Google account.', 'Google OAuth')}
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+              backgroundColor: 'var(--bg-surface)',
               border: 'var(--glass-border)',
               color: 'var(--text-primary)',
               fontSize: 'var(--font-size-sm)',
@@ -444,11 +444,11 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                 gap: 'var(--space-sm)',
                 padding: 'var(--space-sm) var(--space-xl)',
                 backgroundColor: 'var(--accent-primary)',
-                color: 'var(--text-primary)',
+                color: 'var(--btn-text)',
                 borderRadius: 'var(--radius-md)',
                 fontSize: 'var(--font-size-sm)',
                 fontWeight: 'var(--font-weight-bold)',
-                boxShadow: 'var(--shadow-glow-red)',
+                boxShadow: 'var(--shadow-glow-amethyst)',
                 cursor: 'pointer',
                 transition: 'var(--transition-fast)',
               }}
@@ -459,7 +459,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
           </div>
         )}
 
-        {/* Grid of Boarding Passes (Stitch Specification) */}
+        {/* Grid of Boarding Passes */}
         {!loading && !error && activeUpcomingBookings.length > 0 && (
           <div
             style={{
@@ -479,14 +479,16 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                 <div
                   key={booking.id}
                   style={{
-                    backgroundColor: 'rgba(28, 31, 41, 0.65)',
+                    backgroundColor: 'var(--bg-card)',
                     backdropFilter: 'var(--glass-blur)',
                     WebkitBackdropFilter: 'var(--glass-blur)',
-                    border: isConfirmed ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(245, 158, 11, 0.35)',
+                    border: isConfirmed ? 'var(--glass-border)' : '1px solid rgba(6, 182, 212, 0.45)',
                     borderRadius: 'var(--radius-xl)',
                     overflow: 'hidden',
                     position: 'relative',
-                    boxShadow: 'var(--shadow-card)',
+                    boxShadow: isConfirmed 
+                      ? 'var(--shadow-elevated)' 
+                      : 'var(--shadow-elevated), 0 0 24px rgba(6, 182, 212, 0.18)',
                     display: 'flex',
                     flexDirection: 'row',
                     minHeight: '220px',
@@ -502,8 +504,11 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                     }}
                   >
                     <img
-                      src={booking.poster_url || '/assets/posters/neon_ascension.jpg'}
+                      src={booking.poster_url || '/assets/posters/blade_runner_2049.webp'}
                       alt={booking.movie_title}
+                      onError={(e) => {
+                        e.currentTarget.src = '/assets/posters/blade_runner_2049.webp';
+                      }}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -515,7 +520,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                       style={{
                         position: 'absolute',
                         inset: 0,
-                        background: 'linear-gradient(to right, transparent 40%, rgba(28, 31, 41, 0.95) 100%)',
+                        background: 'linear-gradient(to right, transparent 30%, var(--bg-card) 100%)',
                       }}
                     />
                   </div>
@@ -557,14 +562,14 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                         {isConfirmed ? (
                           <span
                             style={{
-                              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                              border: '1px solid rgba(16, 185, 129, 0.35)',
+                              backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                              border: '1px solid rgba(34, 197, 94, 0.35)',
                               color: 'var(--state-available)',
                               fontSize: '11px',
                               fontWeight: 'var(--font-weight-bold)',
                               padding: '2px 8px',
                               borderRadius: 'var(--radius-sm)',
-                              boxShadow: '0 0 10px rgba(16, 185, 129, 0.25)',
+                              boxShadow: '0 0 10px rgba(34, 197, 94, 0.25)',
                               whiteSpace: 'nowrap',
                             }}
                           >
@@ -573,16 +578,17 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                         ) : (
                           <span
                             style={{
-                              backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                              border: '1px solid rgba(245, 158, 11, 0.35)',
-                              color: 'var(--state-reserved)',
+                              backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                              border: '1px solid rgba(6, 182, 212, 0.35)',
+                              color: 'var(--accent-secondary)',
                               fontSize: '11px',
                               fontWeight: 'var(--font-weight-bold)',
-                              padding: '2px 8px',
+                              padding: '3px 10px',
                               borderRadius: 'var(--radius-sm)',
-                              boxShadow: '0 0 10px rgba(245, 158, 11, 0.25)',
+                              boxShadow: '0 0 12px var(--accent-secondary-glow)',
                               whiteSpace: 'nowrap',
                               fontFamily: 'monospace',
+                              letterSpacing: '0.04em',
                             }}
                           >
                             ⏳ {countdownStr}
@@ -644,12 +650,13 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                         style={{
                           width: '44px',
                           height: '44px',
-                          backgroundColor: isConfirmed ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
+                          backgroundColor: isConfirmed ? '#ffffff' : 'var(--bg-surface)',
                           borderRadius: 'var(--radius-sm)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: isConfirmed ? '#090d16' : 'var(--state-reserved)',
+                          color: isConfirmed ? 'var(--bg-canvas)' : 'var(--accent-secondary)',
+                          border: isConfirmed ? 'none' : '1px solid rgba(6, 182, 212, 0.3)',
                         }}
                       >
                         {isConfirmed ? <QrCode size={32} /> : <Clock size={24} />}
@@ -672,12 +679,13 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                               flex: 1,
                               padding: 'var(--space-xs) var(--space-md)',
                               backgroundColor: 'var(--accent-primary)',
-                              color: 'var(--text-primary)',
+                              color: 'var(--btn-text)',
                               fontSize: 'var(--font-size-xs)',
                               fontWeight: 'var(--font-weight-bold)',
                               borderRadius: 'var(--radius-sm)',
-                              boxShadow: 'var(--shadow-glow-red)',
+                              boxShadow: 'var(--shadow-glow-amethyst)',
                               cursor: 'pointer',
+                              border: 'none',
                               transition: 'var(--transition-fast)',
                             }}
                           >
@@ -693,7 +701,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                               justifyContent: 'center',
                               gap: '4px',
                               padding: 'var(--space-xs) var(--space-md)',
-                              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                              backgroundColor: 'var(--bg-surface-elevated)',
                               border: 'var(--glass-border)',
                               color: 'var(--text-primary)',
                               fontSize: 'var(--font-size-xs)',
@@ -724,19 +732,29 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: 'var(--space-xs)',
-                            padding: 'var(--space-xs) var(--space-md)',
-                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                            border: '1px solid var(--state-reserved)',
-                            color: 'var(--state-reserved)',
+                            padding: 'var(--space-sm) var(--space-md)',
+                            backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                            border: '1px solid var(--accent-secondary)',
+                            color: 'var(--accent-secondary)',
                             fontSize: 'var(--font-size-xs)',
                             fontWeight: 'var(--font-weight-bold)',
+                            letterSpacing: '0.04em',
                             borderRadius: 'var(--radius-sm)',
                             cursor: 'pointer',
+                            boxShadow: '0 0 14px rgba(6, 182, 212, 0.2)',
                             transition: 'var(--transition-fast)',
                           }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--accent-secondary)';
+                            e.currentTarget.style.color = 'var(--btn-text)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(6, 182, 212, 0.12)';
+                            e.currentTarget.style.color = 'var(--accent-secondary)';
+                          }}
                         >
-                          <AlertTriangle size={14} />
-                          <span>Enter OTP to Confirm ({countdownStr})</span>
+                          <Clock size={14} />
+                          <span>ENTER OTP TO CONFIRM ({countdownStr})</span>
                         </button>
                       )}
                     </div>
@@ -774,9 +792,9 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                 justifyContent: 'space-between',
                 padding: 'var(--space-md)',
                 borderRadius: 'var(--radius-lg)',
-                backgroundColor: 'rgba(24, 27, 37, 0.5)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                opacity: 0.85,
+                backgroundColor: 'var(--bg-surface)',
+                border: 'var(--glass-border)',
+                opacity: 0.75,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
@@ -788,11 +806,15 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                     borderRadius: 'var(--radius-sm)',
                     overflow: 'hidden',
                     flexShrink: 0,
+                    border: 'var(--glass-border)',
                   }}
                 >
                   <img
-                    src={expiredBooking.poster_url || '/assets/posters/neon_ascension.jpg'}
+                    src={expiredBooking.poster_url || '/assets/posters/blade_runner_2049.webp'}
                     alt={expiredBooking.movie_title}
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/posters/blade_runner_2049.webp';
+                    }}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(100%)' }}
                   />
                 </div>
@@ -809,12 +831,13 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                 <span
                   style={{
                     fontSize: '11px',
-                    fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--state-error)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                    padding: '2px 8px',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    color: 'var(--text-muted)',
+                    backgroundColor: 'var(--bg-surface-elevated)',
+                    padding: '3px 10px',
                     borderRadius: 'var(--radius-sm)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    border: 'var(--glass-border)',
+                    letterSpacing: '0.04em',
                   }}
                 >
                   EXPIRED
@@ -823,7 +846,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
             </div>
           ))}
 
-          {/* Historical Sample 1 */}
+          {/* Historical Sample 1: Dune: Part Two */}
           <div
             style={{
               display: 'flex',
@@ -831,9 +854,9 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               justifyContent: 'space-between',
               padding: 'var(--space-md)',
               borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'rgba(24, 27, 37, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              opacity: 0.8,
+              backgroundColor: 'var(--bg-card)',
+              border: 'var(--glass-border)',
+              opacity: 0.9,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
@@ -845,20 +868,24 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
                   flexShrink: 0,
+                  border: '1px solid var(--border-subtle)',
                 }}
               >
                 <img
-                  src="/assets/posters/elysium_gate.jpg"
-                  alt="Echoes of Silence"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(100%)' }}
+                  src="/assets/posters/dune_part_two.webp"
+                  alt="Dune: Part Two"
+                  onError={(e) => {
+                    e.currentTarget.src = '/assets/posters/blade_runner_2049.webp';
+                  }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(60%)' }}
                 />
               </div>
               <div>
                 <h4 style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-primary)' }}>
-                  The Elysium Gate
+                  Dune: Part Two
                 </h4>
                 <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                  Aug 24, 2026 • Standard 2D
+                  Aug 24, 2026 • IMAX 70mm • Hall 01
                 </p>
               </div>
             </div>
@@ -866,11 +893,11 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               <p style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-primary)' }}>
                 $15.00
               </p>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Completed</span>
+              <span style={{ fontSize: '11px', color: 'var(--state-available)', fontWeight: 'var(--font-weight-medium)' }}>Completed</span>
             </div>
           </div>
 
-          {/* Historical Sample 2 */}
+          {/* Historical Sample 2: Interstellar */}
           <div
             style={{
               display: 'flex',
@@ -878,9 +905,9 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               justifyContent: 'space-between',
               padding: 'var(--space-md)',
               borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'rgba(24, 27, 37, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              opacity: 0.8,
+              backgroundColor: 'var(--bg-card)',
+              border: 'var(--glass-border)',
+              opacity: 0.9,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
@@ -892,20 +919,24 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
                   flexShrink: 0,
+                  border: '1px solid var(--border-subtle)',
                 }}
               >
                 <img
-                  src="/assets/posters/midnight_protocol.jpg"
-                  alt="Midnight Protocol"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(100%)' }}
+                  src="/assets/posters/interstellar.webp"
+                  alt="Interstellar"
+                  onError={(e) => {
+                    e.currentTarget.src = '/assets/posters/blade_runner_2049.webp';
+                  }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(60%)' }}
                 />
               </div>
               <div>
                 <h4 style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-primary)' }}>
-                  Midnight Protocol
+                  Interstellar
                 </h4>
                 <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                  Jul 18, 2026 • Dolby Atmos
+                  Jul 18, 2026 • Dolby Atmos • Hall 02
                 </p>
               </div>
             </div>
@@ -913,7 +944,7 @@ export const MyBookingsPage = ({ onBrowseMovies }) => {
               <p style={{ fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-primary)' }}>
                 $15.00
               </p>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Completed</span>
+              <span style={{ fontSize: '11px', color: 'var(--state-available)', fontWeight: 'var(--font-weight-medium)' }}>Completed</span>
             </div>
           </div>
         </div>
