@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { Modal } from '../ui/Modal';
 import { useAuth } from '../../context/AuthContext';
-import { Film, ShieldCheck, Loader2 } from 'lucide-react';
+import { ShieldCheck, Loader2 } from 'lucide-react';
+import { CineLogo } from '../common/CineLogo';
 
 export const AuthModal = () => {
   const { isAuthModalOpen, closeAuthModal, loginWithGoogle } = useAuth();
@@ -36,22 +37,8 @@ export const AuthModal = () => {
     <Modal isOpen={isAuthModalOpen} onClose={closeAuthModal} title="">
       <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
         {/* Brand Icon Header */}
-        <div
-          style={{
-            width: '56px',
-            height: '56px',
-            margin: '0 auto var(--space-md) auto',
-            borderRadius: 'var(--radius-lg)',
-            backgroundColor: 'var(--bg-surface-elevated)',
-            border: 'var(--glass-border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--accent-primary)',
-            boxShadow: 'var(--shadow-glow-amethyst)',
-          }}
-        >
-          <Film size={28} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-md)' }}>
+          <CineLogo size={56} />
         </div>
 
         <h2

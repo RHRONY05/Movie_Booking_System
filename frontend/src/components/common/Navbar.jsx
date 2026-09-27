@@ -1,6 +1,7 @@
 import React from 'react';
-import { Film, User, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { CineLogo } from './CineLogo';
 
 export const Navbar = ({ onNavigate, currentTab = 'movies' }) => {
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
@@ -31,40 +32,10 @@ export const Navbar = ({ onNavigate, currentTab = 'movies' }) => {
         <div
           onClick={() => onNavigate && onNavigate('movies')}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-sm)',
             cursor: 'pointer',
           }}
         >
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--accent-primary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--btn-text)',
-              boxShadow: 'var(--shadow-glow-amethyst)',
-            }}
-          >
-            <Film size={20} />
-          </div>
-          <div>
-            <span
-              style={{
-                fontFamily: 'var(--font-family-display)',
-                fontSize: 'var(--font-size-xl)',
-                fontWeight: 'var(--font-weight-black)',
-                letterSpacing: '0.05em',
-                color: 'var(--text-primary)',
-              }}
-            >
-              CINE<span style={{ color: 'var(--accent-primary)' }}>RESERVE</span>
-            </span>
-          </div>
+          <CineLogo withText={true} size={36} />
         </div>
 
         {/* Center Navigation Links */}
