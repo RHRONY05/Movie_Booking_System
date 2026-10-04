@@ -107,6 +107,7 @@ export const CineLogo = ({ size = 32, withText = false, className = '' }) => {
             CINE<span style={{ color: 'var(--accent-primary)', textShadow: '0 0 16px rgba(192, 132, 252, 0.5)' }}>RESERVE</span>
           </span>
           <span
+            className="cinelogo-subtitle"
             style={{
               fontSize: '9px',
               fontWeight: 600,
